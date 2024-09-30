@@ -7,11 +7,13 @@ function App() {
   const [flipped, setFlipped] = useState(false);
   const [currIndex, setIndex] = useState(0);
   const [availableIndices, setAvailableIndices] = useState([...Array(images.length).keys()]);
+  const [history, setHistory] = useState([]);
 
   function nextCard(e) {
     e.stopPropagation();
     const randomIndex = getRandomIndex();
     if (randomIndex !== null) {
+      setHistory([...history, currIndex]);
       setIndex(randomIndex);
     } else {
       alert("All cards have been shown!");
@@ -35,13 +37,17 @@ function App() {
 
   function resetCards() {
     setAvailableIndices([...Array(images.length).keys()]);
+    setHistory([]);
   }
 
   function prevCard(e) {
     e.stopPropagation();
-    const randomIndex = getRandomIndex();
-    if (randomIndex !== null) {
-      setIndex(randomIndex);
+    if (history.length > 0) {
+      const lastIndex = history[history.length - 1]; 
+      setHistory(history.slice(0, -1)); 
+      setIndex(lastIndex); 
+    } else {
+      alert("No previous cards to show!");
     }
   }
 
@@ -55,7 +61,7 @@ function App() {
         <h2>Guess the Simpsons character!</h2>
         <h3>
           Are you a fan of the Simpsons? You can test how much you know right
-          here!
+          here! <br/> You will be given a photo of the character and your job is to guess who that character is!
         </h3>
         <p>Number of cards: {names.length}</p>
 
@@ -71,7 +77,7 @@ function App() {
           )}
 
           <div>
-            <button onClick={prevCard}>Back</button>
+            <button onClick={prevCard} disabled={history.length === 0}>Back</button>
             <button onClick={nextCard}>Next</button>
           </div>
         </div>
